@@ -2273,7 +2273,7 @@ class Markdown(object):
 
     def _do_auto_links(self, text):
         if "lazy-links" in self.extras:
-            if text.startswith('<a href'):  # already a link
+            if '<a href=' in text: # already a link
                 return text
             link = self._auto_link_lazy_re
         else:
