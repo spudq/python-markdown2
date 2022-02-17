@@ -2252,6 +2252,7 @@ class Markdown(object):
         return text
 
     _auto_link_re = re.compile(r'<((https?|ftp):[^\'">\s]+)>', re.I)
+    _auto_link_lazy_re = re.compile(r'((https?|ftp):[^\'">\s]+)', re.I)
     def _auto_link_sub(self, match):
         g1 = match.group(1)
         return '<a href="%s">%s</a>' % (g1, g1)
@@ -2271,7 +2272,13 @@ class Markdown(object):
             self._unescape_special_chars(match.group(1)))
 
     def _do_auto_links(self, text):
-        text = self._auto_link_re.sub(self._auto_link_sub, text)
+        if "lazy-links" in self.extras:
+            if text.startswith('<a href'):  # already a link
+                return text
+            link = self._auto_link_lazy_re
+        else:
+            link = self._auto_link_re
+        text = link.sub(self._auto_link_sub, text)
         text = self._auto_email_link_re.sub(self._auto_email_link_sub, text)
         return text
 
